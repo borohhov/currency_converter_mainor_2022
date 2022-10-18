@@ -1,11 +1,8 @@
-class CurrencyConverterController {
-  num value;
-  String from;
-  String to;
+import 'currency_converter_interface.dart';
 
-  CurrencyConverterController(this.value, this.from, this.to);
-
-  num convert() {
+class CurrencyConverterController implements CurrencyConverterInterface {
+  @override
+  Future<num> convert(num value, String from, String to) async {
     String currencies = from.toUpperCase() + to.toUpperCase();
     return (conversionRatio[currencies]  ?? 1) * value;
   }

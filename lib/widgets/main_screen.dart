@@ -1,4 +1,6 @@
 import 'package:currency_converter/controllers/currency_converter_controller.dart';
+import 'package:currency_converter/controllers/currency_converter_forex_api_controller.dart';
+import 'package:currency_converter/controllers/currency_converter_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -12,18 +14,20 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  late TextEditingController _controller = TextEditingController();
+  late TextEditingController _textEditingController = TextEditingController();
+  CurrencyConverterInterface exchangeController =
+      CurrencyConverterForexApiController();
   String fromCurrency = list[0];
   String toCurrency = list[0];
   String fromPrefix = listSymbols[0];
   String toPrefix = listSymbols[1];
-  num value = 0;
+  num amountToConvert = 0;
   num result = 0;
 
   @override
   void initState() {
     super.initState();
-    _controller.text = result.toString();
+    _textEditingController.text = result.toString();
   }
 
   @override
@@ -44,6 +48,7 @@ class _MainScreenState extends State<MainScreen> {
                 Expanded(child: CurrencyDropdownButton(
                   onChanged: (value) {
                     setState(() {
+                      _textEditingController.text = '';
                       fromCurrency = value;
                       fromPrefix = listSymbols[list.indexOf(fromCurrency)];
                     });
@@ -55,7 +60,7 @@ class _MainScreenState extends State<MainScreen> {
               children: [
                 Expanded(
                     child: TextField(
-                  onChanged: (val) => value = double.parse(val),
+                  onChanged: (val) => amountToConvert = double.parse(val),
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     prefixText: fromPrefix,
@@ -68,42 +73,53 @@ class _MainScreenState extends State<MainScreen> {
             Row(children: [
               Expanded(child: Text("To")),
               Expanded(child: CurrencyDropdownButton(
+
                 onChanged: (value) {
                   setState(() {
+                    _textEditingController.text = '';
                     toCurrency = value;
                     toPrefix = listSymbols[list.indexOf(toCurrency)];
                   });
                 },
               ))
             ]),
-            Row(
-              children: [
-                Expanded(
-                    child: TextField(
-                  controller: _controller,
-                  enabled: false,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(), prefixText: toPrefix),
-                )),
-              ],
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      CurrencyConverterController controller =
-                          CurrencyConverterController(
-                              value, fromCurrency, toCurrency);
-                      result = controller.convert();
+            FutureBuilder<num>(
+                future:
+                    exchangeController.convert(amountToConvert, fromCurrency, toCurrency),
+                builder: (context, snapshot) {
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                              child: TextField(
+                            controller: _textEditingController,
+                            enabled: false,
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                prefixText: toPrefix),
+                          )),
+                        ],
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ElevatedButton(
+                              onPressed: () {
+                                exchangeController.convert(
+                                    amountToConvert, fromCurrency, toCurrency);
 
-                      setState(() {
-                        _controller.text = result.toString();
-                      });
-                    },
-                    child: Text("Convert"))
-              ],
-            )
+                                setState(() {
+                                  _textEditingController.text =
+                                      snapshot.data.toString();
+                                });
+                              },
+                              child: Text(snapshot.connectionState != ConnectionState.waiting ? "Convert": "Wait, converting"))
+                        ],
+                      )
+                    ],
+                  );
+                })
           ],
         ),
       ),
