@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:currency_converter/controllers/currency_converter_interface.dart';
+import 'package:currency_converter/controllers/converter_controller/currency_converter_interface.dart';
 import 'package:currency_converter/model/currency_conversion_model.dart';
 import 'package:http/http.dart' as http;
 

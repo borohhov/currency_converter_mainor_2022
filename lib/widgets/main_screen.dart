@@ -1,6 +1,6 @@
-import 'package:currency_converter/controllers/currency_converter_controller.dart';
-import 'package:currency_converter/controllers/currency_converter_forex_api_controller.dart';
-import 'package:currency_converter/controllers/currency_converter_interface.dart';
+import 'package:currency_converter/controllers/converter_controller/currency_converter_controller.dart';
+import 'package:currency_converter/controllers/converter_controller/currency_converter_forex_api_controller.dart';
+import 'package:currency_converter/controllers/converter_controller/currency_converter_interface.dart';
 import 'package:currency_converter/model/currency_conversion_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';

@@ -6,23 +6,6 @@ import 'package:provider/provider.dart';
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({Key? key}) : super(key: key);
 
-  List<Widget> getHistoryItems(BuildContext context) {
-    List<Widget> items = [];
-    Provider.of<CurrencyConversionHistory>(context, listen: false)
-        .history
-        .forEach((element) {
-      items.add(
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-              "From ${element.amountToConvert} ${element.fromCurrency} to ${element.convertedValue} ${element.toCurrency}",
-              style: TextStyle(fontSize: 18)),
-        ),
-      );
-    });
-    return items;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,8 +14,16 @@ class HistoryScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Center(
-          child: Column(
-            children: getHistoryItems(context),
+          child: FutureBuilder<List<String>?>(
+            future: Provider.of<CurrencyConversionHistory>(context).getHistory(),
+            builder: (context, snapshot) {
+              if(!snapshot.hasData || snapshot.data == null) {
+                return Text("No data");
+              }
+              return Column(
+                children: snapshot.data!.map((e) => Text(e)).toList(),
+              );
+            }
           ),
         ),
       ),
