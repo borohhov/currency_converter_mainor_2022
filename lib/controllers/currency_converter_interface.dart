@@ -1,3 +1,5 @@
+import 'package:currency_converter/model/currency_conversion_model.dart';
+
 abstract class CurrencyConverterInterface {
-  Future<num> convert(num value, String from, String to);
+  Future<num> convert(CurrencyConversionModel model);
 }

@@ -1,8 +1,12 @@
 import 'package:currency_converter/controllers/currency_converter_controller.dart';
 import 'package:currency_converter/controllers/currency_converter_forex_api_controller.dart';
 import 'package:currency_converter/controllers/currency_converter_interface.dart';
+import 'package:currency_converter/model/currency_conversion_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+
+import '../model/currency_conversion_model.dart';
 
 class MainScreen extends StatefulWidget {
   MainScreen({Key? key}) : super(key: key);
@@ -17,17 +21,14 @@ class _MainScreenState extends State<MainScreen> {
   late TextEditingController _textEditingController = TextEditingController();
   CurrencyConverterInterface exchangeController =
       CurrencyConverterForexApiController();
-  String fromCurrency = list[0];
-  String toCurrency = list[0];
+  CurrencyConversionModel model = CurrencyConversionModel();
   String fromPrefix = listSymbols[0];
   String toPrefix = listSymbols[1];
-  num amountToConvert = 0;
-  num result = 0;
 
   @override
   void initState() {
     super.initState();
-    _textEditingController.text = result.toString();
+    _textEditingController.text = model.convertedValue.toString();
   }
 
   @override
@@ -49,8 +50,9 @@ class _MainScreenState extends State<MainScreen> {
                   onChanged: (value) {
                     setState(() {
                       _textEditingController.text = '';
-                      fromCurrency = value;
-                      fromPrefix = listSymbols[list.indexOf(fromCurrency)];
+                      model.fromCurrency = value;
+                      fromPrefix = listSymbols[
+                          listOfCurrencies.indexOf(model.fromCurrency)];
                     });
                   },
                 )),
@@ -60,7 +62,7 @@ class _MainScreenState extends State<MainScreen> {
               children: [
                 Expanded(
                     child: TextField(
-                  onChanged: (val) => amountToConvert = double.parse(val),
+                  onChanged: (val) => model.amountToConvert = double.parse(val),
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     prefixText: fromPrefix,
@@ -73,19 +75,18 @@ class _MainScreenState extends State<MainScreen> {
             Row(children: [
               Expanded(child: Text("To")),
               Expanded(child: CurrencyDropdownButton(
-
                 onChanged: (value) {
                   setState(() {
                     _textEditingController.text = '';
-                    toCurrency = value;
-                    toPrefix = listSymbols[list.indexOf(toCurrency)];
+                    model.toCurrency = value;
+                    toPrefix =
+                        listSymbols[listOfCurrencies.indexOf(model.toCurrency)];
                   });
                 },
               ))
             ]),
             FutureBuilder<num>(
-                future:
-                    exchangeController.convert(amountToConvert, fromCurrency, toCurrency),
+                future: exchangeController.convert(model),
                 builder: (context, snapshot) {
                   return Column(
                     children: [
@@ -106,15 +107,30 @@ class _MainScreenState extends State<MainScreen> {
                         children: [
                           ElevatedButton(
                               onPressed: () {
-                                exchangeController.convert(
-                                    amountToConvert, fromCurrency, toCurrency);
-
-                                setState(() {
-                                  _textEditingController.text =
-                                      snapshot.data.toString();
-                                });
+                                exchangeController.convert(model);
+                                if (snapshot.hasData) {
+                                  setState(() {
+                                    model.convertedValue = snapshot.data ?? 0;
+                                    Provider.of<CurrencyConversionHistory>(
+                                            context,
+                                            listen: false)
+                                        .add(model);
+                                    _textEditingController.text =
+                                        snapshot.data.toString();
+                                  });
+                                }
                               },
-                              child: Text(snapshot.connectionState != ConnectionState.waiting ? "Convert": "Wait, converting"))
+                              child: Text(snapshot.connectionState !=
+                                      ConnectionState.waiting
+                                  ? "Convert"
+                                  : "Wait, converting"))
+                        ],
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextButton(
+                              onPressed: () => Navigator.of(context).pushNamed('/history'), child: Text("Go to History"))
                         ],
                       )
                     ],
@@ -127,9 +143,6 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
-const List<String> list = <String>['USD', 'EUR', 'GBP', 'TRY'];
-const List<String> listSymbols = <String>['\$', '€', '£', '₺'];
-
 class CurrencyDropdownButton extends StatefulWidget {
   CurrencyDropdownButton({super.key, this.onChanged});
 
@@ -140,7 +153,7 @@ class CurrencyDropdownButton extends StatefulWidget {
 }
 
 class _CurrencyDropdownButtonState extends State<CurrencyDropdownButton> {
-  String dropdownValue = list.first;
+  String dropdownValue = listOfCurrencies.first;
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +175,7 @@ class _CurrencyDropdownButtonState extends State<CurrencyDropdownButton> {
           }
         });
       },
-      items: list.map<DropdownMenuItem<String>>((String value) {
+      items: listOfCurrencies.map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
           child: Text(value),

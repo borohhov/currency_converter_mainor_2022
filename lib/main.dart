@@ -1,8 +1,16 @@
+import 'package:currency_converter/model/currency_conversion_history.dart';
+import 'package:currency_converter/widgets/history_screen.dart';
 import 'package:currency_converter/widgets/main_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => CurrencyConversionHistory(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -12,10 +20,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Currency Converter",
+      routes: {
+        '/': (context) => MainScreen(),
+        '/history': (context) => const HistoryScreen(),
+      },
       theme: ThemeData(
         primarySwatch: Colors.blue,
-      ),
-      home: MainScreen(),
+      )
     );
   }
 }

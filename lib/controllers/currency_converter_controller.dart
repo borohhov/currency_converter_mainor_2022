@@ -1,10 +1,12 @@
+import 'package:currency_converter/model/currency_conversion_model.dart';
+
 import 'currency_converter_interface.dart';
 
 class CurrencyConverterController implements CurrencyConverterInterface {
   @override
-  Future<num> convert(num value, String from, String to) async {
-    String currencies = from.toUpperCase() + to.toUpperCase();
-    return (conversionRatio[currencies]  ?? 1) * value;
+  Future<num> convert(CurrencyConversionModel model) async {
+    String currencies = model.fromCurrency.toUpperCase() + model.toCurrency.toUpperCase();
+    return (conversionRatio[currencies]  ?? 1) * model.amountToConvert;
   }
 
   Map<String, num> conversionRatio = {
