@@ -4,7 +4,7 @@ import 'package:currency_converter/controllers/converter_controller/currency_con
 import 'package:currency_converter/model/currency_conversion_model.dart';
 import 'package:http/http.dart' as http;
 
-const String apiKey = '14e1167030-c7743be3d4-rjxtlb';
+const String apiKey = '0236edf637-9e64ab7203-rl0san';
 
 class CurrencyConverterForexApiController implements CurrencyConverterInterface {
   @override

@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:currency_converter/controllers/persistence_controller/firestore_controller.dart';
 import 'package:currency_converter/controllers/persistence_controller/persistence_controller_interface.dart';
 import 'package:currency_converter/controllers/persistence_controller/shared_preferences_controller.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,7 @@ const HistoryTable = "HistoryTable";
 
 class CurrencyConversionHistory extends ChangeNotifier {
   final List<String> _history = [];
-  PersistenceController persistenceController = SharedPreferencesController();
+  PersistenceController persistenceController = FirestoreController();
 
   Future<List<String>?> getHistory() {
     var list = persistenceController.getListString(HistoryTable);

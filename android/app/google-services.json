@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "709701506749",
+    "project_id": "mainor-2022",
+    "storage_bucket": "mainor-2022.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:709701506749:android:47deee54fc5677b10f89d4",
+        "android_client_info": {
+          "package_name": "com.mainor.currency_converter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "709701506749-91rh4ljemfc84latpkp8jtcduktc979i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeFH7KgzfO6lCqResMbLzY28klfHrSpQE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "709701506749-91rh4ljemfc84latpkp8jtcduktc979i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
